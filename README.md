@@ -5,7 +5,7 @@ Image matching and comparison based on open cv.
 Install
 -------
 ``` sh
-$ pip install image-bot
+$ pip install my-image-bot
 ```
 
 Image matching
