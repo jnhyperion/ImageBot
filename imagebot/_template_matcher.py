@@ -60,7 +60,7 @@ class TemplateMatcher(BaseMatcher):
 
     def _get_rectangle(self, loc) -> Tuple[Tuple[int, int], Tuple[int, int]]:
         x, y = loc
-        return loc, (x + self.w_template, y + self.h_template)
+        return (int(x), int(y)), (int(x + self.w_template), int(y + self.h_template))
 
     def _get_rectangle_center(self, loc) -> Tuple[int, int]:
         x, y = loc
