@@ -7,8 +7,14 @@ from ._results import MatchingResult
 
 
 class TemplateMatcher(BaseMatcher):
-    def __init__(self, image, template, tolerance=0.8, convert_2_gray=True):
-        super().__init__(image, template, convert_2_gray=convert_2_gray)
+    def __init__(
+        self,
+        image_path: str,
+        template_path: str,
+        convert_2_gray: bool = True,
+        tolerance: float = 0.8,
+    ):
+        super().__init__(image_path, template_path, convert_2_gray=convert_2_gray)
         self.tolerance = tolerance
 
     def find_all_results(self) -> List[MatchingResult]:

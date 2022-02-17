@@ -87,3 +87,8 @@ def lint(ctx):
         f"pylint ./imagebot --disable=R,C,W1514,W0703,W0212,W0123,W1203"
         f" --extension-pkg-whitelist=cv2,numpy",
     )
+
+
+@task(build)
+def publish(ctx):
+    ctx.run(f"{sys.executable} -m twine upload dist/*")

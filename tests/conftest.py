@@ -1,5 +1,4 @@
 import os
-import cv2
 import shutil
 import pytest
 
@@ -20,12 +19,7 @@ def tests_out_dir(tests_dir):
 @pytest.fixture
 def images(request, tests_dir):
     return (
-        cv2.imread(
-            os.path.join(tests_dir, f"images/{request.param}.png"), cv2.IMREAD_UNCHANGED
-        ),
-        cv2.imread(
-            os.path.join(tests_dir, f"images/{request.param}_template.png"),
-            cv2.IMREAD_UNCHANGED,
-        ),
+        os.path.join(tests_dir, f"images/{request.param}.png"),
+        os.path.join(tests_dir, f"images/{request.param}_template.png"),
         request.param,
     )

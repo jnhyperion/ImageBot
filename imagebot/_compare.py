@@ -2,9 +2,13 @@ import cv2
 
 
 class ImageCompare:
-    def __init__(self, image_source, image_ref, convert_2_gray=True):
-        self.image_source = image_source
-        self.image_ref = image_ref
+    def __init__(
+        self, image_source_path: str, image_ref_path: str, convert_2_gray: bool = True
+    ):
+        self.image_source_path = image_source_path
+        self.image_ref_path = image_ref_path
+        self.image_source = cv2.imread(image_source_path, cv2.IMREAD_UNCHANGED)
+        self.image_ref = cv2.imread(image_ref_path, cv2.IMREAD_UNCHANGED)
         assert self.image_source is not None, "Image source should not be None"
         assert self.image_ref is not None, "Image reference should not be None"
         self.h_image_source, self.w_image_source = self.image_source.shape[:2]
