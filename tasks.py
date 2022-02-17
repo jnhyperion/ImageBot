@@ -57,7 +57,7 @@ def install(ctx):
 
 @task
 def uninstall(ctx):
-    ctx.run(f"pip uninstall image-bot -y", hide="out")
+    ctx.run(f"pip uninstall image-bot-cv2 -y", hide="out")
 
 
 @task

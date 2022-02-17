@@ -1,9 +1,16 @@
+import os
 from setuptools import setup, find_packages
 
 REQUIREMENTS = [i.strip() for i in open("requirements.txt").readlines()]
 
+about = {}
+with open(os.path.join("imagebot", "__version__.py")) as f:
+    exec(f.read(), about)
+
+VERSION = about["__version__"]
+
 setup(
-    version="0.0.1",
+    version=VERSION,
     name="image-bot-cv2",
     packages=find_packages(),
     description=f"Image matching/comparison based on open-cv",
