@@ -1,3 +1,5 @@
+import os
+import tempfile
 import cv2
 import numpy as np
 from typing import Union, List
@@ -7,11 +9,13 @@ from ._results import MatchingResult
 
 
 class FeatureMatcher(BaseMatcher):
+    _MAX_RATIO = 0.5
+
     def find_all_results(self) -> List[MatchingResult]:
         result = self.find_best_result()
         return [result] if result is not None else []
 
-    def find_best_result(self) -> Union[MatchingResult, None]:
+    def _feature_match(self):
         # Initiate SIFT detector
         sift = cv2.SIFT_create()
         # find the key points and descriptors with SIFT
@@ -40,7 +44,10 @@ class FeatureMatcher(BaseMatcher):
                 break
             else:
                 ratio = ratio + 0.001
+        return match_pts, kp_image, kp_template, ratio
 
+    def find_best_result(self) -> Union[MatchingResult, None]:
+        match_pts, kp_image, kp_template, ratio = self._feature_match()
         h, w = self.h_template, self.w_template
         if len(match_pts) >= 4:
             # Draw a polygon around the recognized object
@@ -64,19 +71,41 @@ class FeatureMatcher(BaseMatcher):
             min_x = int(min([p[0][0] for p in points]))
             max_y = int(max([p[0][1] for p in points]))
             min_y = int(min([p[0][1] for p in points]))
-            return MatchingResult(
+            result = MatchingResult(
                 center=(center_x, center_y), rect=((min_x, max_y), (max_x, min_y))
             )
+            new_ratio = self._cal_feature_ratio(result)
+            return result if new_ratio < self._MAX_RATIO else None
         elif len(match_pts) > 0:
             points = [kp_image[m.trainIdx].pt for m in match_pts]
             center_x = int(sum([x for x, y in points]) / len(points))
             center_y = int(sum([y for x, y in points]) / len(points))
-            return MatchingResult(
+            result = MatchingResult(
                 center=(center_x, center_y),
                 rect=(
                     (int(center_x - w / 2), int(center_y + h / 2)),
                     (int(center_x + w / 2), int(center_y - h / 2)),
                 ),
             )
+            new_ratio = self._cal_feature_ratio(result)
+            return result if new_ratio < self._MAX_RATIO else None
         else:
             return None
+
+    def _cal_feature_ratio(self, result: MatchingResult) -> float:
+        """
+        re-calculate the first matched image rect with original template
+        """
+        (min_x, max_y), (max_x, min_y) = result.rect
+        matched_img = self.image[min_y:max_y, min_x:max_x]
+        same_size_matched_img = cv2.resize(
+            matched_img, self.template.shape[:2][::-1], interpolation=cv2.INTER_NEAREST
+        )
+        with tempfile.TemporaryDirectory() as d:
+            matched_img_path = os.path.join(d, "tmp_matched_img.png")
+            cv2.imwrite(matched_img_path, same_size_matched_img)
+            feature_matcher = FeatureMatcher(
+                self.template_path, matched_img_path, self.convert_2_gray
+            )
+            _, _, _, ratio = feature_matcher._feature_match()
+            return ratio

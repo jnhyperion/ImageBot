@@ -115,7 +115,14 @@ class TestImageMatcher:
 
     @pytest.mark.parametrize(
         "images",
-        ["missing"],
+        [
+            "missing",
+            "should_not_match1",
+            "should_not_match2",
+            "should_not_match3",
+            "should_not_match4",
+            "should_not_match5",
+        ],
         indirect=True,
     )
     def test_can_not_match(self, images):
