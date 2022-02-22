@@ -193,3 +193,31 @@ class TestImageMatcher:
         )
         self.results = generic_matcher.find_all_results()
         assert len(self.results) > 0
+
+    @pytest.mark.parametrize(
+        "images",
+        ["diff_color_bit1", "diff_color_bit2", "diff_color_bit3", "diff_color_bit4"],
+        indirect=True,
+    )
+    def test_get_best_match_diff_color_bit(self, images):
+        img, template, self.image_name = images
+        generic_matcher = GenericMatcher(
+            img, template, tolerance=0.95, convert_2_gray=False
+        )
+        self.results = [generic_matcher.find_best_result()]
+        assert len(self.results) == 1
+        assert None not in self.results
+
+    @pytest.mark.parametrize(
+        "images",
+        ["diff_color_bit1", "diff_color_bit2", "diff_color_bit3", "diff_color_bit4"],
+        indirect=True,
+    )
+    def test_get_best_match_diff_color_bit_gray(self, images):
+        img, template, self.image_name = images
+        generic_matcher = GenericMatcher(
+            img, template, tolerance=0.95, convert_2_gray=True
+        )
+        self.results = [generic_matcher.find_best_result()]
+        assert len(self.results) == 1
+        assert None not in self.results

@@ -3,6 +3,7 @@ import math
 import numpy as np
 from typing import List, Union, Tuple
 from ._base_matcher import BaseMatcher
+from ._convertor import convert_images
 from ._results import MatchingResult
 
 
@@ -51,12 +52,10 @@ class TemplateMatcher(BaseMatcher):
         return best_match if confidence >= self.tolerance else None
 
     def _cv2_match_template(self):
-        if self.convert_2_gray:
-            template_gray = cv2.cvtColor(self.template, cv2.COLOR_BGR2GRAY)
-            image_gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-            return cv2.matchTemplate(image_gray, template_gray, cv2.TM_CCOEFF_NORMED)
-        else:
-            return cv2.matchTemplate(self.image, self.template, cv2.TM_CCOEFF_NORMED)
+        _image, _template = convert_images(
+            self.image, self.template, self.convert_2_gray
+        )
+        return cv2.matchTemplate(_image, _template, cv2.TM_CCOEFF_NORMED)
 
     def _get_rectangle(self, loc) -> Tuple[Tuple[int, int], Tuple[int, int]]:
         x, y = loc

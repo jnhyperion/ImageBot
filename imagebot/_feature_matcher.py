@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from typing import Union, List
+from ._convertor import convert_images
 from ._base_matcher import BaseMatcher
 from ._results import MatchingResult
 
@@ -14,12 +15,9 @@ class FeatureMatcher(BaseMatcher):
         # Initiate SIFT detector
         sift = cv2.SIFT_create()
         # find the key points and descriptors with SIFT
-        if self.convert_2_gray:
-            _template = cv2.cvtColor(self.template, cv2.COLOR_BGR2GRAY)
-            _image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-        else:
-            _template = self.template
-            _image = self.image
+        _image, _template = convert_images(
+            self.image, self.template, self.convert_2_gray
+        )
         kp_image, desc_image = sift.detectAndCompute(_image, None)
         kp_template, desc_template = sift.detectAndCompute(_template, None)
         # BFMatcher with default params

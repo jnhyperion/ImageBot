@@ -28,12 +28,13 @@ def clean(ctx):
         _get_ctx_abs_path(ctx, ".pytest_cache"),
         ignore_errors=True,
     )
+    shutil.rmtree(_get_ctx_abs_path(ctx, ".tox"), ignore_errors=True)
     Path(_get_ctx_abs_path(ctx, ".coverage")).unlink(missing_ok=True)
     shutil.rmtree(_get_ctx_abs_path(ctx, "tests", "__out__"), ignore_errors=True)
     shutil.rmtree(_get_ctx_abs_path(ctx, "build"), ignore_errors=True)
     shutil.rmtree(_get_ctx_abs_path(ctx, "dist"), ignore_errors=True)
     shutil.rmtree(
-        _get_ctx_abs_path(ctx, f"image_bot.egg-info"),
+        _get_ctx_abs_path(ctx, f"image_bot_cv2.egg-info"),
         ignore_errors=True,
     )
 
@@ -72,13 +73,7 @@ def reformat_code(ctx):
 
 @task
 def test(ctx):
-    ctx.run(
-        f"{sys.executable} -m pytest --cov=imagebot tests --cov-report term --cov-report html"
-    )
-    print(
-        f"Coverage html report: "
-        f'file://{os.path.join(os.path.dirname(__file__), "htmlcov", "index.html")}'
-    )
+    ctx.run("tox")
 
 
 @task

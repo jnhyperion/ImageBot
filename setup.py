@@ -24,4 +24,5 @@ setup(
     ],
     python_requires=">=3.8",
     install_requires=REQUIREMENTS,
+    include_package_data=True,
 )
