@@ -73,7 +73,13 @@ def reformat_code(ctx):
 
 @task
 def test(ctx):
-    ctx.run("tox")
+    ctx.run(
+        f"{sys.executable} -m pytest --cov=imagebot tests --cov-report term --cov-report html"
+    )
+    print(
+        f"Coverage html report: "
+        f'file://{os.path.join(os.path.dirname(__file__), "htmlcov", "index.html")}'
+    )
 
 
 @task
