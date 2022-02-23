@@ -47,8 +47,9 @@ class FeatureMatcher(BaseMatcher):
         return match_pts, kp_image, kp_template, ratio
 
     def find_best_result(self) -> Union[MatchingResult, None]:
-        match_pts, kp_image, kp_template, ratio = self._feature_match()
+        match_pts, kp_image, kp_template, _ = self._feature_match()
         h, w = self.h_template, self.w_template
+        is_homography_ret_none = False
         if len(match_pts) >= 4:
             # Draw a polygon around the recognized object
             src_pts = np.float32(
@@ -59,24 +60,27 @@ class FeatureMatcher(BaseMatcher):
             )
             # Get the transformation matrix
             M, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
-            # Find the perspective transformation to get the corresponding points
-            pts = np.float32([[0, 0], [0, h - 1], [w - 1, h - 1], [w - 1, 0]]).reshape(
-                -1, 1, 2
-            )
-            dst = cv2.perspectiveTransform(pts, M)
-            points = np.int32(dst).tolist()
-            center_x = int(sum([p[0][0] for p in points]) / len(points))
-            center_y = int(sum([p[0][1] for p in points]) / len(points))
-            max_x = int(max([p[0][0] for p in points]))
-            min_x = int(min([p[0][0] for p in points]))
-            max_y = int(max([p[0][1] for p in points]))
-            min_y = int(min([p[0][1] for p in points]))
-            result = MatchingResult(
-                center=(center_x, center_y), rect=((min_x, max_y), (max_x, min_y))
-            )
-            new_ratio = self._cal_feature_ratio(result)
-            return result if new_ratio < self._MAX_RATIO else None
-        elif len(match_pts) > 0:
+            if M is not None:
+                # Find the perspective transformation to get the corresponding points
+                pts = np.float32(
+                    [[0, 0], [0, h - 1], [w - 1, h - 1], [w - 1, 0]]
+                ).reshape(-1, 1, 2)
+                dst = cv2.perspectiveTransform(pts, M)
+                points = np.int32(dst).tolist()
+                center_x = int(sum([p[0][0] for p in points]) / len(points))
+                center_y = int(sum([p[0][1] for p in points]) / len(points))
+                max_x = int(max([p[0][0] for p in points]))
+                min_x = int(min([p[0][0] for p in points]))
+                max_y = int(max([p[0][1] for p in points]))
+                min_y = int(min([p[0][1] for p in points]))
+                result = MatchingResult(
+                    center=(center_x, center_y), rect=((min_x, max_y), (max_x, min_y))
+                )
+                new_ratio = self._cal_feature_ratio(result)
+                return result if new_ratio < self._MAX_RATIO else None
+            else:
+                is_homography_ret_none = True
+        if len(match_pts) > 0 or is_homography_ret_none:
             points = [kp_image[m.trainIdx].pt for m in match_pts]
             center_x = int(sum([x for x, y in points]) / len(points))
             center_y = int(sum([y for x, y in points]) / len(points))
