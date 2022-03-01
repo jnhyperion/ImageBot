@@ -242,3 +242,17 @@ class TestImageMatcher:
         self.results = [generic_matcher.find_best_result()]
         assert len(self.results) == 1
         assert None not in self.results
+
+    @pytest.mark.parametrize(
+        "images",
+        ["negative_match_point"],
+        indirect=True,
+    )
+    def test_negative_match_point(self, images):
+        img, template, self.image_name = images
+        generic_matcher = GenericMatcher(
+            img, template, tolerance=0.95, convert_2_gray=True
+        )
+        self.results = [generic_matcher.find_best_result()]
+        assert len(self.results) == 1
+        assert None not in self.results
