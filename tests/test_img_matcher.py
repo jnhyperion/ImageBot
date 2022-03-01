@@ -270,3 +270,16 @@ class TestImageMatcher:
         self.results = [generic_matcher.find_best_result()]
         assert len(self.results) == 1
         assert None not in self.results
+
+    @pytest.mark.parametrize(
+        "images",
+        ["windows_bug"],
+        indirect=True,
+    )
+    def test_windows_bug(self, images):
+        img, template, self.image_name = images
+        generic_matcher = GenericMatcher(
+            img, template, convert_2_gray=False, tolerance=0.9
+        )
+        result = generic_matcher.find_best_result()
+        assert result is None
