@@ -87,8 +87,8 @@ class FeatureMatcher(BaseMatcher):
             result = MatchingResult(
                 center=(center_x, center_y),
                 rect=(
-                    (int(center_x - w / 2), int(center_y + h / 2)),
-                    (int(center_x + w / 2), int(center_y - h / 2)),
+                    (max(int(center_x - w / 2), 0), int(center_y + h / 2)),
+                    (int(center_x + w / 2), max(int(center_y - h / 2), 0)),
                 ),
             )
             new_ratio = self._cal_feature_ratio(result)
