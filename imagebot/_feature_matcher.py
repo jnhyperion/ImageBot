@@ -102,14 +102,24 @@ class FeatureMatcher(BaseMatcher):
         """
         (min_x, max_y), (max_x, min_y) = result.rect
         matched_img = self.image[min_y:max_y, min_x:max_x]
-        same_size_matched_img = cv2.resize(
-            matched_img, self.template.shape[:2][::-1], interpolation=cv2.INTER_NEAREST
-        )
-        with tempfile.TemporaryDirectory() as d:
-            matched_img_path = os.path.join(d, "tmp_matched_img.png")
-            cv2.imwrite(matched_img_path, same_size_matched_img)
-            feature_matcher = FeatureMatcher(
-                self.template_path, matched_img_path, self.convert_2_gray
-            )
-            _, _, _, ratio = feature_matcher._feature_match()
-            return ratio
+        same_size_matched_img = None
+        try:
+            if len(matched_img) > 0:
+                same_size_matched_img = cv2.resize(
+                    matched_img,
+                    self.template.shape[:2][::-1],
+                    interpolation=cv2.INTER_NEAREST,
+                )
+        except Exception as e:
+            print(f"Convert matched image with error: {e}")
+        if same_size_matched_img is not None:
+            with tempfile.TemporaryDirectory() as d:
+                matched_img_path = os.path.join(d, "tmp_matched_img.png")
+                cv2.imwrite(matched_img_path, same_size_matched_img)
+                feature_matcher = FeatureMatcher(
+                    self.template_path, matched_img_path, self.convert_2_gray
+                )
+                _, _, _, ratio = feature_matcher._feature_match()
+                return ratio
+        else:
+            return 1

@@ -273,10 +273,10 @@ class TestImageMatcher:
 
     @pytest.mark.parametrize(
         "images",
-        ["windows_bug"],
+        ["matched_rect_is_point"],
         indirect=True,
     )
-    def test_windows_bug(self, images):
+    def test_matched_rect_is_point(self, images):
         img, template, self.image_name = images
         generic_matcher = GenericMatcher(
             img, template, convert_2_gray=False, tolerance=0.9
