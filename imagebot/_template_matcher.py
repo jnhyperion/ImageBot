@@ -14,9 +14,13 @@ class TemplateMatcher(BaseMatcher):
         template_path: str,
         convert_2_gray: bool = True,
         tolerance: float = 0.8,
+        strict_mode: bool = False,
+        template_from_resolution: Union[None, Tuple[int, int]] = None,
     ):
         super().__init__(image_path, template_path, convert_2_gray=convert_2_gray)
         self.tolerance = tolerance
+        self.strict_mode = strict_mode
+        self.template_from_resolution = template_from_resolution
 
     def find_all_results(self) -> List[MatchingResult]:
         res = self._cv2_match_template()
@@ -55,12 +59,32 @@ class TemplateMatcher(BaseMatcher):
         _image, _template = convert_images(
             self.image, self.template, self.convert_2_gray
         )
+        if self.template_from_resolution is not None:
+            try:
+                _image = cv2.resize(
+                    _image,
+                    self.template_from_resolution,
+                    interpolation=cv2.INTER_NEAREST,
+                )
+            except Exception as e:
+                print(
+                    f"Fail to resize image to the same resolution from template {self.template_from_resolution}: {e}"
+                )
         return cv2.matchTemplate(_image, _template, cv2.TM_CCOEFF_NORMED)
 
+    def _covert_pt_by_resolution(self, pt):
+        if self.template_from_resolution is None:
+            return pt
+        else:
+            w_r, h_r = self.template_from_resolution
+            x = self.w_image / w_r * pt[0]
+            y = self.h_image / h_r * pt[1]
+            return x, y
+
     def _get_rectangle(self, loc) -> Tuple[Tuple[int, int], Tuple[int, int]]:
-        x, y = loc
+        x, y = self._covert_pt_by_resolution(loc)
         return (int(x), int(y)), (int(x + self.w_template), int(y + self.h_template))
 
     def _get_rectangle_center(self, loc) -> Tuple[int, int]:
-        x, y = loc
+        x, y = self._covert_pt_by_resolution(loc)
         return int(x + self.w_template / 2), int(y + self.h_template / 2)

@@ -283,3 +283,97 @@ class TestImageMatcher:
         )
         result = generic_matcher.find_best_result()
         assert result is None
+
+    @pytest.mark.parametrize(
+        "images",
+        ["feature", "compress", "rotation", "diff_size1", "diff_size2"],
+        indirect=True,
+    )
+    def test_match_with_strict_mode(self, images):
+        img, template, self.image_name = images
+        generic_matcher = GenericMatcher(
+            img, template, convert_2_gray=False, tolerance=0.8, strict_mode=False
+        )
+        result = generic_matcher.find_best_result()
+        assert result is not None
+        generic_matcher = GenericMatcher(
+            img, template, convert_2_gray=False, tolerance=0.8, strict_mode=True
+        )
+        result = generic_matcher.find_best_result()
+        assert result is None
+
+    @pytest.mark.parametrize(
+        "images",
+        ["multi_diff1", "multi_diff2", "multi_diff3"],
+        indirect=True,
+    )
+    def test_match_find_all_with_strict_mode(self, images):
+        img, template, self.image_name = images
+        generic_matcher = GenericMatcher(
+            img, template, convert_2_gray=False, tolerance=0.8, strict_mode=False
+        )
+        self.results = generic_matcher.find_all_results()
+        assert self.results != []
+        generic_matcher = GenericMatcher(
+            img, template, convert_2_gray=False, tolerance=0.8, strict_mode=True
+        )
+        self.results = generic_matcher.find_all_results()
+        assert self.results == []
+
+    @pytest.mark.parametrize(
+        "images",
+        ["resolution"],
+        indirect=True,
+    )
+    def test_match_with_template_from_resolution(self, images):
+        img, template, self.image_name = images
+        generic_matcher = GenericMatcher(
+            img, template, convert_2_gray=False, tolerance=0.8, strict_mode=True
+        )
+        result = generic_matcher.find_best_result()
+        assert result is None
+        generic_matcher = GenericMatcher(
+            img,
+            template,
+            convert_2_gray=False,
+            tolerance=0.8,
+            strict_mode=True,
+            template_from_resolution=(1024, 675),
+        )
+        self.results = [generic_matcher.find_best_result()]
+        assert None not in self.results
+
+    @pytest.mark.parametrize(
+        "images",
+        ["feature"],
+        indirect=True,
+    )
+    def test_feature_match_resize_error(self, images, mocker):
+        img, template, self.image_name = images
+        generic_matcher = GenericMatcher(
+            img, template, convert_2_gray=False, tolerance=0.8
+        )
+        p = mocker.patch("cv2.resize")
+        p.side_effect = Exception("fail")
+        result = generic_matcher.find_best_result()
+        assert result is None
+
+    @pytest.mark.parametrize(
+        "images",
+        ["resolution"],
+        indirect=True,
+    )
+    def test_match_with_template_from_resolution_with_error(self, images, mocker):
+        img, template, self.image_name = images
+        generic_matcher = GenericMatcher(
+            img,
+            template,
+            convert_2_gray=False,
+            tolerance=0.8,
+            strict_mode=True,
+            template_from_resolution=(1024, 675),
+        )
+        p = mocker.patch("cv2.resize")
+        p.side_effect = Exception("fail")
+        result = generic_matcher.find_best_result()
+        assert result is None

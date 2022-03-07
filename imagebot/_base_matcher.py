@@ -5,7 +5,10 @@ from ._results import MatchingResult
 
 class BaseMatcher:
     def __init__(
-        self, image_path: str, template_path: str, convert_2_gray: bool = True
+        self,
+        image_path: str,
+        template_path: str,
+        convert_2_gray: bool = True,
     ):
         self.image_path = image_path
         self.template_path = template_path
