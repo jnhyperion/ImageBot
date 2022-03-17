@@ -26,7 +26,7 @@ def test_get_similarity_same_image_with_gray(images):
 
 @pytest.mark.parametrize(
     "images",
-    ["same_diff_size1"],
+    ["same_diff_size1", "same_diff_size2"],
     indirect=True,
 )
 def test_get_similarity_same_image_diff_size(images):
