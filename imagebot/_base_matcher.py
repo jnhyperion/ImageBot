@@ -8,7 +8,7 @@ class BaseMatcher:
         self,
         image_path: str,
         template_path: str,
-        convert_2_gray: bool = True,
+        convert_2_gray: bool = False,
     ):
         self.image_path = image_path
         self.template_path = template_path

@@ -5,6 +5,11 @@ from ._results import MatchingResult
 
 
 class GenericMatcher(TemplateMatcher):
+    def __init__(self, *args, strict_mode: bool = False, **kwargs):
+
+        super().__init__(*args, **kwargs)
+        self.strict_mode = strict_mode
+
     def find_all_results(self) -> List[MatchingResult]:
         results = super().find_all_results()
         if self.strict_mode or results:

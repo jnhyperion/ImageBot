@@ -12,14 +12,12 @@ class TemplateMatcher(BaseMatcher):
         self,
         image_path: str,
         template_path: str,
-        convert_2_gray: bool = True,
+        convert_2_gray: bool = False,
         tolerance: float = 0.8,
-        strict_mode: bool = False,
         template_from_resolution: Union[None, Tuple[int, int]] = None,
     ):
         super().__init__(image_path, template_path, convert_2_gray=convert_2_gray)
         self.tolerance = tolerance
-        self.strict_mode = strict_mode
         self.template_from_resolution = template_from_resolution
         self._converted_image = None
         self._converted_template = None
