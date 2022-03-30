@@ -43,7 +43,9 @@ class TemplateMatcher(BaseMatcher):
         for pt in non_overlapped_points:
             rectangle = self._get_rectangle(pt)
             center = self._get_rectangle_center(pt)
-            one_good_match = MatchingResult(center=center, rect=rectangle)
+            one_good_match = MatchingResult(
+                center=center, rect=rectangle, confidence=res[pt[1]][pt[0]]
+            )
             results.append(one_good_match)
         return results
 
@@ -52,7 +54,9 @@ class TemplateMatcher(BaseMatcher):
         _, confidence, _, pt = cv2.minMaxLoc(res)
         rectangle = self._get_rectangle(pt)
         center = self._get_rectangle_center(pt)
-        best_match = MatchingResult(center=center, rect=rectangle)
+        best_match = MatchingResult(
+            center=center, rect=rectangle, confidence=confidence
+        )
         return best_match if confidence >= self.tolerance else None
 
     def _cv2_match_template(self):

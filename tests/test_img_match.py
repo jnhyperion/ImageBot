@@ -86,6 +86,8 @@ class TestImageMatcher:
         )
         self.results = generic_matcher.find_all_results()
         assert len(self.results) > 0
+        for result in self.results:
+            assert result.confidence >= 0.95 or result.confidence == -1
 
     @pytest.mark.parametrize(
         "images",
@@ -362,6 +364,29 @@ class TestImageMatcher:
             tolerance=0.95,
             strict_mode=True,
             template_from_resolution=(989, 621),
+        )
+        self.results = [generic_matcher.find_best_result()]
+        assert None not in self.results
+
+    @pytest.mark.parametrize(
+        "images",
+        ["resolution3"],
+        indirect=True,
+    )
+    def test_match_with_template_from_resolution3(self, images):
+        img, template, self.image_name = images
+        generic_matcher = GenericMatcher(
+            img, template, convert_2_gray=False, tolerance=0.8, strict_mode=True
+        )
+        result = generic_matcher.find_best_result()
+        assert result is None
+        generic_matcher = GenericMatcher(
+            img,
+            template,
+            convert_2_gray=False,
+            tolerance=0.8,
+            strict_mode=True,
+            template_from_resolution=(2560, 1600),
         )
         self.results = [generic_matcher.find_best_result()]
         assert None not in self.results
