@@ -79,6 +79,21 @@ class TestImageMatcher:
         image_list,
         indirect=True,
     )
+    def test_get_best_result_data_type(self, images):
+        img, template, self.image_name = images
+        generic_matcher = GenericMatcher(
+            img, template, tolerance=0.95, convert_2_gray=True
+        )
+        self.results = [generic_matcher.find_best_result()]
+        assert len(self.results) == 1
+        assert None not in self.results
+        assert isinstance(self.results[0].confidence, float)
+
+    @pytest.mark.parametrize(
+        "images",
+        image_list,
+        indirect=True,
+    )
     def test_get_all_results_without_gray(self, images):
         img, template, self.image_name = images
         generic_matcher = GenericMatcher(
@@ -87,7 +102,22 @@ class TestImageMatcher:
         self.results = generic_matcher.find_all_results()
         assert len(self.results) > 0
         for result in self.results:
-            assert result.confidence >= 0.95 or result.confidence == -1
+            assert result.confidence >= 0.95 or result.confidence == -1.0
+
+    @pytest.mark.parametrize(
+        "images",
+        image_list,
+        indirect=True,
+    )
+    def test_get_all_results_data_type(self, images):
+        img, template, self.image_name = images
+        generic_matcher = GenericMatcher(
+            img, template, tolerance=0.95, convert_2_gray=False
+        )
+        self.results = generic_matcher.find_all_results()
+        assert len(self.results) > 0
+        for result in self.results:
+            assert isinstance(result.confidence, float)
 
     @pytest.mark.parametrize(
         "images",

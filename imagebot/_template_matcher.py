@@ -44,7 +44,7 @@ class TemplateMatcher(BaseMatcher):
             rectangle = self._get_rectangle(pt)
             center = self._get_rectangle_center(pt)
             one_good_match = MatchingResult(
-                center=center, rect=rectangle, confidence=res[pt[1]][pt[0]]
+                center=center, rect=rectangle, confidence=float(res[pt[1]][pt[0]])
             )
             results.append(one_good_match)
         return results
@@ -55,7 +55,7 @@ class TemplateMatcher(BaseMatcher):
         rectangle = self._get_rectangle(pt)
         center = self._get_rectangle_center(pt)
         best_match = MatchingResult(
-            center=center, rect=rectangle, confidence=confidence
+            center=center, rect=rectangle, confidence=float(confidence)
         )
         return best_match if confidence >= self.tolerance else None
 

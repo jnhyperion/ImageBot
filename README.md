@@ -24,7 +24,7 @@ Example
 ``` python
 # match
 result = GenericMatcher(img, img_template, tolerance=0.8).find_best_result()
-# return: MatchingResult(center=(255, 121), rect=((227, 144), (283, 98)))
+# return: MatchingResult(center=(255, 121), rect=((227, 144), (283, 98)), confidence=0.9899024367332458)
 
 # compare
 similarity = ImageCompare(img, img_ref).get_similarity()

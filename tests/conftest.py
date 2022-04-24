@@ -9,8 +9,8 @@ def tests_dir():
 
 
 @pytest.fixture(scope="module")
-def tests_out_dir(tests_dir):
-    out = os.path.join(tests_dir, "__out__")
+def tests_out_dir(tests_dir, worker_id):
+    out = os.path.join(tests_dir, "__out__", worker_id)
     shutil.rmtree(out, ignore_errors=True)
     os.makedirs(out)
     yield out

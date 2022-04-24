@@ -2,6 +2,7 @@ invoke==1.4.1
 pytest
 pytest-mock
 pytest-cov
+pytest-xdist
 black
 twine
 wheel
