@@ -45,7 +45,7 @@ def build(ctx, skip_uninstall=False):
     dist = _get_ctx_abs_path(ctx, "dist")
     wheel_file = os.path.join(dist, os.listdir(dist)[0])
     assert wheel_file.endswith(".whl")
-    ctx.run(f"pip install {wheel_file}", hide="out")
+    ctx.run(f"{sys.executable} -m pip install {wheel_file}", hide="out")
     if not skip_uninstall:
         uninstall(ctx)
 
@@ -58,7 +58,7 @@ def install(ctx):
 
 @task
 def uninstall(ctx):
-    ctx.run(f"pip uninstall image-bot-cv2 -y", hide="out")
+    ctx.run(f"{sys.executable} -m pip uninstall image-bot-cv2 -y", hide="out")
 
 
 @task
